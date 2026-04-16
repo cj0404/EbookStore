@@ -11,11 +11,11 @@ export default function Home({ featuredProducts, categories }) {
                 <div className="hero-content">
                     <span className="hero-tag">Rare & Beloved eBooks</span>
                     <h1 className="hero-title">
-                        A sanctuary for <em>timeless</em> literature.
+                        Where Old Stories Find <em>New Readers</em>
                     </h1>
                     <p className="hero-desc">
-                        DustyPages curates rare, restored, and beautifully presented literary classics for readers
-                        who want their digital library to feel collectible.
+                        Step into a curated collection of timeless literature, rare manuscripts, 
+                        and beloved classics — delivered instantly to your device in beautifully formatted eBook editions.
                     </p>
                     <div className="hero-btns">
                         <Link href="/products" className="btn-primary">
@@ -37,15 +37,16 @@ export default function Home({ featuredProducts, categories }) {
                         </div>
                     ))}
                 </div>
+                
             </section>
 
             <div className="ornamental-divider">✦ ✦ ✦</div>
 
             <section className="featured">
                 <div className="section-header">
-                    <h2>Featured Books</h2>
+                    <h2>Featured Titles</h2>
                     <div className="section-rule" />
-                    <p>Lovingly restored editions chosen for devoted readers</p>
+                    <p>Hand-picked from our deepest shelves, dusted off just for you.</p>
                 </div>
                 <div className="products-grid four-col">
                     {featuredProducts.map((product) => (
