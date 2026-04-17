@@ -30,10 +30,28 @@ export default function Products({ products, filters, genres }) {
     const form = useForm(emptyProduct);
 
     const submit = () => {
+        // If a file is included, use router to let Inertia send multipart form data
+        const hasFile = !!form.data.image_file;
+
         if (editing) {
+            if (hasFile) {
+                const payload = { ...form.data };
+                // include method override so server treats this as a PATCH
+                payload._method = 'PATCH';
+                // router.post will convert File objects into FormData
+                router.post(`/admin/products/${editing.id}`, payload, { onSuccess: () => setOpen(false) });
+                return;
+            }
+
             form.patch(`/admin/products/${editing.id}`, { onSuccess: () => setOpen(false) });
             return;
         }
+
+        if (hasFile) {
+            router.post('/admin/products', { ...form.data }, { onSuccess: () => setOpen(false) });
+            return;
+        }
+
         form.post('/admin/products', { onSuccess: () => setOpen(false) });
     };
 
@@ -205,10 +223,55 @@ export default function Products({ products, filters, genres }) {
                                     onChange={(e) => form.setData('cover_gradient', e.target.value)}
                                 />
                             </div>
+
                             <div className="form-group full">
-                                <label>Image Upload</label>
-                                <input type="file" />
+                                <label>Cover Image</label>
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            const file = e.currentTarget.files?.[0] ?? null;
+                                            form.setData('image_file', file);
+                                            form.setData('image', file ? file.name : '');
+                                        }}
+                                    />
+                                    <input
+                                        value={form.data.image || ''}
+                                        onChange={(e) => form.setData('image', e.target.value)}
+                                        placeholder="book.jpg (will be uploaded when selected)"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="button-link"
+                                        onClick={async () => {
+                                            try {
+                                                const res = await fetch('/admin/products/images');
+                                                const json = await res.json();
+                                                if (!json.images || json.images.length === 0) {
+                                                    alert('No images available in public/images');
+                                                    return;
+                                                }
+                                                const list = json.images.map((f, i) => `${i + 1}. ${f}`).join('\n');
+                                                const input = window.prompt('Available images (type number to select):\n\n' + list + '\n\nNumber:');
+                                                if (!input) return;
+                                                const idx = parseInt(input, 10) - 1;
+                                                if (Number.isNaN(idx) || idx < 0 || idx >= json.images.length) {
+                                                    alert('Invalid selection');
+                                                    return;
+                                                }
+                                                form.setData('image', json.images[idx]);
+                                            } catch (err) {
+                                                alert('Could not load images');
+                                            }
+                                        }}
+                                    >
+                                        Browse server
+                                    </button>
+                                </div>
+                                {form.data.image ? <div style={{ marginTop: 8, fontSize: 13 }}>Selected: {form.data.image}</div> : null}
                             </div>
+
                         </div>
                         <label className="checkbox-row">
                             <input

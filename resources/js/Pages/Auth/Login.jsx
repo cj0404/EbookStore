@@ -16,7 +16,7 @@ export default function Login() {
                         <h1>Welcome Back</h1>
                         <p>Sign in to continue your literary journey</p>
                     </div>
-                    <form className="login-card" onSubmit={(event) => event.preventDefault()}>
+                    <form className="login-card" onSubmit={(event) => event.preventDefault()} action="/login" method="POST">
                         <div className="form-group">
                             <label>Email Address</label>
                             <input

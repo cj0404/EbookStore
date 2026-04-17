@@ -7,6 +7,8 @@ use App\Support\CartManager;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Order;
+
 
 class StoreController extends Controller
 {
@@ -78,6 +80,7 @@ class StoreController extends Controller
         ]);
     }
 
+
     public function product(Product $product): Response
     {
         abort_unless($product->is_active, 404);
@@ -95,4 +98,19 @@ class StoreController extends Controller
             'relatedProducts' => $related,
         ]);
     }
+
+    public function orders(Request $request): Response
+    {
+        $user = $request->attributes->get('auth_user');
+
+        $orders = $user->orders()
+            ->with(['items.product'])
+            ->latest()
+            ->paginate(10);
+
+        return Inertia::render('Store/MyOrders', [
+            'orders' => $orders,
+        ]);
+    }
 }
+

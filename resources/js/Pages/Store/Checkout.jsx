@@ -2,8 +2,24 @@ import { useForm } from '@inertiajs/react';
 import StoreLayout from '../../Layouts/StoreLayout';
 import { currency } from '../../utils';
 
+
 export default function Checkout({ items, subtotal, total, user }) {
-    const [firstName = '', ...rest] = (user?.name || '').split(' ');
+    const pageUser = user;
+
+    if (pageUser?.is_admin) {
+        return (
+            <StoreLayout title="Checkout">
+                <div className="empty-cart">
+                    <span className="empty-icon">👨‍💼</span>
+                    <h2>Admin Access Restricted</h2>
+                    <p>Administrators cannot checkout. Visit <Link href="/admin/dashboard">Admin Dashboard</Link>.</p>
+                </div>
+            </StoreLayout>
+        );
+    }
+
+    const [firstName = '', ...rest] = (pageUser?.name || '').split(' ');
+
 
     const { data, setData, post, processing, errors } = useForm({
         first_name: firstName,

@@ -9,6 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
         'title',
         'slug',
@@ -23,6 +24,7 @@ class Product extends Model
         'stock',
         'is_active',
         'badge',
+        'image',
         'cover_emoji',
         'cover_class',
         'cover_gradient',
@@ -34,6 +36,25 @@ class Product extends Model
         'sort_order',
     ];
 
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'wishlists');
+    }
+
+    /**
+     * Use the slug for route model binding.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+
     protected function casts(): array
     {
         return [
@@ -43,6 +64,7 @@ class Product extends Model
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'formats' => 'array',
+            'image' => 'string',
         ];
     }
 }

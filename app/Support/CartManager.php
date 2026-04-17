@@ -2,9 +2,12 @@
 
 namespace App\Support;
 
+
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Session;
+
 
 class CartManager
 {
@@ -51,8 +54,15 @@ class CartManager
         ];
     }
 
-    public static function setQuantity(Product $product, int $quantity): void
+
+    public static function setQuantity(Request $request, Product $product, int $quantity): void
     {
+        $user = $request->attributes->get('auth_user');
+
+        if ($user?->is_admin) {
+            return;
+        }
+
         $cart = Session::get('cart', []);
 
         if ($quantity <= 0) {
@@ -63,6 +73,7 @@ class CartManager
 
         Session::put('cart', $cart);
     }
+
 
     public static function clear(): void
     {

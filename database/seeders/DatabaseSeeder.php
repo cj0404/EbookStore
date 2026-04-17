@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -31,7 +32,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '+63 912 000 0000',
             'favorite_genre' => 'Classic Literature',
             'is_admin' => true,
-            'password' => 'password123',
+            'password' => Hash::make('password'),
         ]);
 
         $customer = User::create([
@@ -41,7 +42,7 @@ class DatabaseSeeder extends Seeder
             'phone' => '+63 912 345 6789',
             'favorite_genre' => 'Classic Literature',
             'is_admin' => false,
-            'password' => 'password123',
+            'password' => Hash::make('password123'),
         ]);
 
         $products = collect([
@@ -68,6 +69,7 @@ class DatabaseSeeder extends Seeder
                 'published_label' => '1861 · Restored Ed.',
                 'is_featured' => true,
                 'sort_order' => 1,
+                'image' => 'great-expectations.jpg',
             ],
             [
                 'title' => 'Moby Dick',
@@ -92,6 +94,7 @@ class DatabaseSeeder extends Seeder
                 'published_label' => '1851 · Sea Edition',
                 'is_featured' => true,
                 'sort_order' => 2,
+                'image' => 'moby-dick.jpg',
             ],
             [
                 'title' => 'Jane Eyre',
@@ -116,6 +119,7 @@ class DatabaseSeeder extends Seeder
                 'published_label' => '1847 · Collector Edition',
                 'is_featured' => true,
                 'sort_order' => 3,
+                'image' => 'jane-eyre.jpg',
             ],
             [
                 'title' => 'Don Quixote',
@@ -140,6 +144,7 @@ class DatabaseSeeder extends Seeder
                 'published_label' => '1605 · Modern Translation',
                 'is_featured' => false,
                 'sort_order' => 4,
+                'image' => 'treasure-island.jpg',
             ],
             [
                 'title' => 'Dracula',
@@ -164,6 +169,7 @@ class DatabaseSeeder extends Seeder
                 'published_label' => '1897 · Midnight Edition',
                 'is_featured' => false,
                 'sort_order' => 5,
+                'image' => 'dracula.jpg',
             ],
             [
                 'title' => 'Frankenstein',
@@ -188,6 +194,7 @@ class DatabaseSeeder extends Seeder
                 'published_label' => '1818 · Laboratory Edition',
                 'is_featured' => true,
                 'sort_order' => 6,
+                'image' => 'frankenstein.jpg',
             ],
             [
                 'title' => 'Thus Spoke Zarathustra',
@@ -212,6 +219,7 @@ class DatabaseSeeder extends Seeder
                 'published_label' => '1883 · Annotated Edition',
                 'is_featured' => false,
                 'sort_order' => 7,
+                'image' => 'meditations.jpg',
             ],
             [
                 'title' => 'Wuthering Heights',
@@ -236,6 +244,7 @@ class DatabaseSeeder extends Seeder
                 'published_label' => '1847 · Moors Edition',
                 'is_featured' => false,
                 'sort_order' => 8,
+                'image' => 'wuthering-heights.jpg',
             ],
             [
                 'title' => 'The Republic',
@@ -260,6 +269,7 @@ class DatabaseSeeder extends Seeder
                 'published_label' => '375 BC · Scholar Edition',
                 'is_featured' => false,
                 'sort_order' => 9,
+                'image' => 'the-republic.jpg',
             ],
         ])->map(fn (array $product) => Product::create($product));
 

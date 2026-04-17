@@ -49,14 +49,33 @@ class ProductController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        Product::create($this->validatedData($request));
+        $data = $this->validatedData($request);
+
+        // handle uploaded image file (from Inertia form multipart)
+        if ($request->hasFile('image_file') && $request->file('image_file')->isValid()) {
+            $file = $request->file('image_file');
+            $filename = uniqid('book_') . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images'), $filename);
+            $data['image'] = $filename;
+        }
+
+        Product::create($data);
 
         return redirect()->route('admin.products')->with('success', 'Book added successfully.');
     }
 
     public function update(Request $request, Product $product): RedirectResponse
     {
-        $product->update($this->validatedData($request, $product));
+        $data = $this->validatedData($request, $product);
+
+        if ($request->hasFile('image_file') && $request->file('image_file')->isValid()) {
+            $file = $request->file('image_file');
+            $filename = uniqid('book_') . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images'), $filename);
+            $data['image'] = $filename;
+        }
+
+        $product->update($data);
 
         return redirect()->route('admin.products')->with('success', 'Book updated successfully.');
     }
@@ -77,6 +96,29 @@ class ProductController extends Controller
         return redirect()->route('admin.products')->with('success', 'Availability updated.');
     }
 
+    /**
+     * Return list of image filenames in public/images for admin to browse.
+     */
+    public function images(Request $request)
+    {
+        $dir = public_path('images');
+        $files = [];
+
+        if (is_dir($dir)) {
+            foreach (scandir($dir) as $file) {
+                if (in_array($file, ['.', '..'])) {
+                    continue;
+                }
+                $path = $dir . DIRECTORY_SEPARATOR . $file;
+                if (is_file($path)) {
+                    $files[] = $file;
+                }
+            }
+        }
+
+        return response()->json(['images' => $files]);
+    }
+
     protected function validatedData(Request $request, ?Product $product = null): array
     {
         $validated = $request->validate([
@@ -94,7 +136,9 @@ class ProductController extends Controller
             'cover_gradient' => ['required', 'string', 'max:255'],
             'pages' => ['required', 'integer', 'min:1'],
             'language' => ['required', 'string', 'max:255'],
-            'published_label' => ['required', 'string', 'max:255'],
+'published_label' => ['required', 'string', 'max:255'],
+            'image' => ['nullable', 'string', 'max:255'],
+            'image_file' => ['nullable', 'file', 'image', 'max:4096'],
             'formats' => ['required', 'array', 'min:1'],
             'formats.*' => ['string'],
             'is_active' => ['required', 'boolean'],
@@ -109,3 +153,4 @@ class ProductController extends Controller
         return $validated;
     }
 }
+

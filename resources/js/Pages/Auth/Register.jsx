@@ -23,7 +23,7 @@ export default function Register() {
                         <h1>Join DustyPages</h1>
                         <p>Begin your collection of timeless literature today</p>
                     </div>
-                    <form className="reg-card" onSubmit={(event) => event.preventDefault()}>
+                    <form className="reg-card" onSubmit={(event) => event.preventDefault()} action="/register" method="POST">
                         <div className="form-grid">
                             {[
                                 ['first_name', 'First Name *'],

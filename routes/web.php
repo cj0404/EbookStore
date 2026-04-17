@@ -8,7 +8,9 @@ use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', [StoreController::class, 'home'])->name('home');
 Route::get('/products', [StoreController::class, 'products'])->name('products');
@@ -27,14 +29,20 @@ Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.u
 Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
 
 Route::middleware('auth.session')->group(function () {
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
+    Route::post('/products/{product:slug}/wishlist', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::get('/checkout', [CheckoutController::class, 'checkout'])->name('checkout');
     Route::post('/checkout', [CheckoutController::class, 'placeOrder'])->name('checkout.store');
     Route::get('/order-confirmation/{order}', [CheckoutController::class, 'confirmation'])->name('order.confirmation');
+
+
+    Route::get('/my-orders', [StoreController::class, 'orders'])->name('customer.orders');
 
     Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/dashboard', DashboardController::class)->name('admin.dashboard');
         Route::get('/products', [AdminProductController::class, 'index'])->name('admin.products');
         Route::post('/products', [AdminProductController::class, 'store'])->name('admin.products.store');
+    Route::get('/products/images', [AdminProductController::class, 'images'])->name('admin.products.images');
         Route::patch('/products/{product}', [AdminProductController::class, 'update'])->name('admin.products.update');
         Route::patch('/products/{product}/availability', [AdminProductController::class, 'availability'])->name('admin.products.availability');
         Route::delete('/products/{product}', [AdminProductController::class, 'destroy'])->name('admin.products.destroy');

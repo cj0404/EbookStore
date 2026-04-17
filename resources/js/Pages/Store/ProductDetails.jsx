@@ -1,15 +1,32 @@
-import { Link, useForm } from '@inertiajs/react';
+import { Link, useForm, usePage, router } from '@inertiajs/react';
 import ProductCard from '../../Components/ProductCard';
 import StoreLayout from '../../Layouts/StoreLayout';
 import { currency, ratingStars } from '../../utils';
 
+
+
 export default function ProductDetails({ product, relatedProducts }) {
-    const { data, setData, post, processing } = useForm({ quantity: 1 });
+    const { auth } = usePage().props;
+    const user = auth?.user;
+    const isAdmin = !!user?.is_admin;
+
+    const { data, setData, post, processing, errors } = useForm({ quantity: 1 });
 
     const addToCart = (event) => {
         event.preventDefault();
-        post(`/cart/${product.id}`);
+        console.log('Adding product ID:', product.id, 'quantity:', data.quantity);
+        post(`/cart/${product.id}`, {
+            onSuccess: () => {
+                router.visit('/cart');
+            },
+            onError: (errors) => {
+                console.error('Add to cart error:', errors);
+            },
+        });
     };
+
+    const errorMessage = Object.values(errors || {}).flat().join(', ') || null;
+
 
     return (
         <StoreLayout title={product.title}>
@@ -19,10 +36,17 @@ export default function ProductDetails({ product, relatedProducts }) {
 
             <div className="product-section">
                 <div className="cover-area">
-                    <div className={`book-cover ${product.cover_class}`} style={{ background: product.cover_gradient }}>
-                        {product.badge ? <span className="cover-badge">{product.badge}</span> : null}
-                        {product.cover_emoji}
-                    </div>
+                    {product.image ? (
+                        <div className="book-cover-image">
+                            {product.badge ? <span className="cover-badge">{product.badge}</span> : null}
+                            <img src={`/images/${product.image}`} alt={product.title} />
+                        </div>
+                    ) : (
+                        <div className={`book-cover ${product.cover_class}`} style={{ background: product.cover_gradient }}>
+                            {product.badge ? <span className="cover-badge">{product.badge}</span> : null}
+                            {product.cover_emoji}
+                        </div>
+                    )}
                     <div className="cover-thumbnails">
                         {[product.cover_emoji, '📚', '🏛️'].map((icon, index) => (
                             <div
@@ -77,7 +101,8 @@ export default function ProductDetails({ product, relatedProducts }) {
                         </div>
                     </div>
 
-                    <form onSubmit={addToCart}>
+                    { !isAdmin ? (
+                        <form onSubmit={addToCart}>
                         <div className="qty-row">
                             <label>Quantity:</label>
                             <div className="qty-control">
@@ -105,15 +130,32 @@ export default function ProductDetails({ product, relatedProducts }) {
                                 </button>
                             </div>
                         </div>
-                        <div className="btn-row">
-                            <button className="btn-primary" disabled={processing || product.stock < 1}>
-                                Add to Cart
-                            </button>
-                            <button type="button" className="btn-secondary">
-                                ♡ Wishlist
-                            </button>
+                            <div className="btn-row">
+                                <button className="btn-primary" disabled={processing || product.stock < 1}>
+                                    Add to Cart
+                                </button>
+                                {errorMessage && (
+                                    <div className="error-message" style={{ color: 'var(--error)', fontSize: '14px', margin: '8px 0', padding: '8px', background: 'var(--light-red)', borderRadius: '4px' }}>
+                                        {errorMessage}
+                                    </div>
+                                )}
+                                <button
+                                    type="button"
+                                    className="btn-secondary"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        router.post(`/products/${product.slug}/wishlist`);
+                                    }}
+                                >
+                                    ♡ Wishlist
+                                </button>
+                            </div>
+                        </form>
+                    ) : (
+                        <div style={{ margin: '16px 0', padding: '12px', background: 'var(--cream)', borderRadius: 6 }}>
+                            <strong>Admin view — actions disabled.</strong>
                         </div>
-                    </form>
+                    )}
 
                     <div className="divider-rule" />
                     <div className="description">

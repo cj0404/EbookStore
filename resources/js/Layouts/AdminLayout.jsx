@@ -55,7 +55,9 @@ export default function AdminLayout({ title, active, children, topbarRight }) {
                 <div className="admin-main">
                     <div className="admin-topbar">
                         <div className="topbar-title">{title}</div>
-                        <div className="topbar-actions">{topbarRight}</div>
+                            <div className="topbar-actions">
+                                {topbarRight}
+                            </div>
                     </div>
                     <div className="admin-content">{children}</div>
                     <footer className="admin-footer">DustyPages Admin Panel</footer>

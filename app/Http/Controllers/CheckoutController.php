@@ -12,15 +12,21 @@ use Inertia\Response;
 
 class CheckoutController extends Controller
 {
+
     public function checkout(Request $request): Response|RedirectResponse
     {
+        $user = $request->attributes->get('auth_user');
+
+        if ($user?->is_admin) {
+            return redirect()->route('admin.dashboard')->with('error', 'Admins cannot checkout.');
+        }
+
         $totals = CartManager::totals();
 
         if ($totals['item_count'] === 0) {
             return redirect()->route('products');
         }
 
-        $user = $request->attributes->get('auth_user');
 
         return Inertia::render('Store/Checkout', [
             ...$totals,
@@ -28,13 +34,21 @@ class CheckoutController extends Controller
         ]);
     }
 
+
     public function placeOrder(Request $request): RedirectResponse
     {
+        $user = $request->attributes->get('auth_user');
+
+        if ($user?->is_admin) {
+            return redirect()->back()->with('error', 'Admins cannot place orders.');
+        }
+
         $totals = CartManager::totals();
 
         if ($totals['item_count'] === 0) {
             return redirect()->route('cart');
         }
+
 
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],

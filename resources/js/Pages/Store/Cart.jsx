@@ -3,11 +3,26 @@ import StoreLayout from '../../Layouts/StoreLayout';
 import { currency } from '../../utils';
 
 export default function Cart({ items, item_count, subtotal, total }) {
+
     const { auth } = usePage().props;
+    const user = auth?.user;
+
+    if (user?.is_admin) {
+        return (
+            <StoreLayout title="Cart">
+                <div className="empty-cart">
+                    <span className="empty-icon">👨‍💼</span>
+                    <h2>Admin Access Restricted</h2>
+                    <p>Administrators cannot use shopping cart features. Visit <Link href="/admin/dashboard">Admin Dashboard</Link>.</p>
+                </div>
+            </StoreLayout>
+        );
+    }
 
     const updateQuantity = (productId, quantity) => {
         router.patch(`/cart/${productId}`, { quantity }, { preserveScroll: true });
     };
+
 
     const removeItem = (productId) => {
         router.delete(`/cart/${productId}`, { preserveScroll: true });

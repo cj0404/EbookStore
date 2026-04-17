@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
@@ -34,8 +35,8 @@ class RegisterController extends Controller
             'email' => $validated['email'],
             'username' => $validated['username'],
             'phone' => $validated['phone'] ?? null,
-            'favorite_genre' => $validated['favorite_genre'] ?? null,
-            'password' => $validated['password'],
+'favorite_genre' => $validated['favorite_genre'] ?? null,
+            'password' => Hash::make($validated['password']),
         ]);
 
         $request->session()->put('auth_user_id', $user->id);
