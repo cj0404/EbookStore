@@ -19,13 +19,13 @@ export default function Cart({ items, item_count, subtotal, total }) {
         );
     }
 
-    const updateQuantity = (productId, quantity) => {
-        router.patch(`/cart/${productId}`, { quantity }, { preserveScroll: true });
+    const updateQuantity = (productSlug, quantity) => {
+        router.patch(`/cart/${productSlug}`, { quantity }, { preserveScroll: true });
     };
 
 
-    const removeItem = (productId) => {
-        router.delete(`/cart/${productId}`, { preserveScroll: true });
+    const removeItem = (productSlug) => {
+        router.delete(`/cart/${productSlug}`, { preserveScroll: true });
     };
 
     return (
@@ -60,7 +60,7 @@ export default function Cart({ items, item_count, subtotal, total }) {
                                     <div className="qty-control">
                                         <button
                                             className="qty-btn"
-                                            onClick={() => updateQuantity(product.id, Math.max(1, quantity - 1))}
+                                            onClick={() => updateQuantity(product.slug, Math.max(1, quantity - 1))}
                                         >
                                             −
                                         </button>
@@ -68,16 +68,16 @@ export default function Cart({ items, item_count, subtotal, total }) {
                                             className="qty-input"
                                             type="number"
                                             value={quantity}
-                                            onChange={(event) => updateQuantity(product.id, Number(event.target.value))}
+                                            onChange={(event) => updateQuantity(product.slug, Number(event.target.value))}
                                         />
                                         <button
                                             className="qty-btn"
-                                            onClick={() => updateQuantity(product.id, quantity + 1)}
+                                            onClick={() => updateQuantity(product.slug, quantity + 1)}
                                         >
                                             +
                                         </button>
                                     </div>
-                                    <button className="remove-btn" onClick={() => removeItem(product.id)}>
+                                    <button className="remove-btn" onClick={() => removeItem(product.slug)}>
                                         ✕ Remove
                                     </button>
                                 </div>
@@ -120,7 +120,7 @@ export default function Cart({ items, item_count, subtotal, total }) {
                     <Link href={auth?.user ? '/checkout' : '/login'} className="checkout-btn">
                         Proceed to Checkout →
                     </Link>
-                    <Link href="/products" className="continue-btn">
+                    <Link href="/products" className="continue-btn" style={{marginTop: '12px', textAlign: 'center'}}>
                         ← Continue Shopping
                     </Link>
                     {!auth?.user ? <p className="secure-note">Sign in is required before checkout.</p> : null}
